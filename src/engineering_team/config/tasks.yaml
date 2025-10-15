@@ -1,0 +1,69 @@
+design_task:
+  description: >
+    Prepare a detailed backend API design for a simple ecommerce site (Movies & Books).
+    Everything should be in 1 python module. Outline the service class ({class_name}),
+    helper functions, Pydantic models, and FastAPI routes with method signatures.
+    Here are the requirements: {requirements}
+    IMPORTANT: Only output the design in markdown format.
+  expected_output: >
+    A detailed design in markdown identifying classes, functions, Pydantic models, and routes in the module.
+  agent: engineering_lead
+  output_file: output/{module_name}_design.md
+
+code_task:
+  description: >
+    Implement the FastAPI backend as described by the engineering lead in a single module: {module_name}.
+    It must be self-contained (in-memory data), importable as `output.{module_name without .py}`,
+    and runnable via `uvicorn output.{module_name without .py}:app --reload`.
+    Here are the requirements: {requirements}
+  expected_output: >
+    IMPORTANT: Output ONLY the raw Python code without any markdown/backticks.
+  agent: backend_engineer
+  context:
+    - design_task
+  output_file: output/{module_name}
+
+frontend_html_task:
+  description: >
+    Create index.html using Bootstrap 5. Include:
+    - Navbar with search input and cart button (offcanvas)
+    - Category filter (All, Movies, Books)
+    - Product grid cards with Add to Cart
+    - Link styles.css and app.js (relative paths)
+  expected_output: >
+    IMPORTANT: Output ONLY the raw HTML without any markdown/backticks.
+  agent: frontend_engineer
+  output_file: output/web/index.html
+
+frontend_css_task:
+  description: >
+    Create styles.css with small, clean styling for cards, prices, ratings, and cart badge.
+  expected_output: >
+    IMPORTANT: Output ONLY the raw CSS without any markdown/backticks.
+  agent: frontend_engineer
+  output_file: output/web/styles.css
+
+frontend_js_task:
+  description: >
+    Create app.js that:
+    - fetches products from http://127.0.0.1:8000/products (supports q and category params)
+    - renders the grid
+    - manages an in-memory cart UI (add/remove, update qty, subtotal)
+    - shows cart in Bootstrap offcanvas
+    - calls mock checkout at http://127.0.0.1:8000/checkout and handles success
+  expected_output: >
+    IMPORTANT: Output ONLY the raw JavaScript without any markdown/backticks.
+  agent: frontend_engineer
+  output_file: output/web/app.js
+
+test_task:
+  description: >
+    Write pytest tests for {module_name} using fastapi.testclient.TestClient.
+    Cover: /health 200 OK; /products returns list and respects q/category filters;
+    /cart add/remove/update flow; /cart returns subtotal; /checkout returns order id and clears cart.
+  expected_output: >
+    IMPORTANT: Output ONLY the raw Python code without any markdown/backticks.
+  agent: test_engineer
+  context:
+    - code_task
+  output_file: output/test_{module_name}
